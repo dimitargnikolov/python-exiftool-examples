@@ -1,0 +1,137 @@
+{
+    "fields": [
+	{
+	    "id": "date_last_modified",
+	    "label": "Date Last Modified",
+	    "type": "date",
+	    "editable": false,
+	    "facetable": true
+	}, {
+	    "id": "owner",
+	    "label": "Owner",
+	    "type": "string",
+	    "editable": true,
+	    "facetable": false
+	}, {
+	    "id": "project",
+	    "label": "Project",
+	    "type": "string",
+	    "editable": true,
+	    "facetable": false
+	}, {
+	    "id": "description",
+	    "label": "Description",
+	    "type": "text",
+	    "editable": true,
+	    "facetable": false
+	}, {
+	    "id": "file_type",
+	    "label": "File Type",
+	    "type": "enum",
+	    "editable": true,
+	    "facetable": true,
+	    "options": [
+		{"id": "inventory", "label": "Inventory List"},		    
+		{"id": "protocol", "label": "Protocol"},
+		{"id": "manuscript", "label": "Manuscript"},
+		{"id": "db", "label": "Database"},
+		{"id": "summary", "label": "Data Summary"},
+		{"id": "lit", "label": "Literature"},
+		{"id": "stats", "label": "Statistics"},
+		{"id": "code", "label": "Code"},
+		{"id": "experiment", "label": "Experimental Data"},
+		{"id": "other", "label": "Other"}
+	    ]
+	}, {
+	    "id": "experiment_data_type",
+	    "label": "Experiment Data Type",
+	    "type": "enum",
+	    "editable": true,
+	    "facetable": true,
+	    "options": [
+		{"id": "original", "label": "Original"},
+		{"id": "processed", "label": "Processed"}
+	    ]
+	}, {
+	    "id": "experiment_type",
+	    "label": "Experiment Type",
+	    "type": "enum",
+	    "editable": true,
+	    "facetable": true,
+	    "options": [
+		{"id": "imaging", "label": "Imaging"},
+		{"id": "pcr", "label": "Real-time PCR"},
+		{"id": "sequencing", "label": "Sequencing"},
+		{"id": "blotting", "label": "Western Blotting"},
+		{"id": "ms", "label": "Mass Spectrometry"},
+		{"id": "genotyping", "label": "Genotyping"},
+		{"id": "ep", "label": "Electrophysiology"},
+		{"id": "behavior", "label": "Behavior"},
+		{"id": "others", "label": "Others"}
+	    ]
+	}, {
+	    "id": "pcr_method",
+	    "label": "PCR Method",
+	    "type": "enum",
+	    "editable": true,
+	    "facetable": true,
+	    "options": [
+		{"id": "sybr", "label": "SYBR"},
+		{"id": "taqman", "label": "TaqMan"}
+	    ]
+	}, {
+	    "id": "microscope",
+	    "label": "Microscope",
+	    "type": "enum",
+	    "editable": true,
+	    "facetable": true,
+	    "options": [
+		{"id": "confocal", "label": "Confocal"},
+		{"id": "multiphoton", "label": "Multi-photon"},
+		{"id": "brightfield", "label": "Brightfield"}
+	    ]
+	}, {
+	    "id": "software",
+	    "label": "Software",
+	    "type": "enum",
+	    "editable": true,
+	    "facetable": true,
+	    "options": [
+		{"id": "imaris", "label": "Imaris"},
+		{"id": "imagej", "label": "Image J"},
+		{"id": "niselts", "label": "NIS Elements"}
+	    ]
+	}, {
+	    "id": "experiment_condition",
+	    "label": "Experiment Condition",
+	    "type": "enum",
+	    "editable": true,
+	    "facetable": true,
+	    "options": [
+		{"id": "invivo", "label": "In vivo"},
+		{"id": "invitro", "label": "In vitro"}
+	    ]
+	}
+    ],
+    "dependencies": {
+	"experiment_type": [{"id": "file_type", "value": "experiment"}],
+	"experiment_condition": [{"id": "file_type", "value": "experiment"}],
+	"pcr_method": [
+	    {"id": "experiment_type", "value": "pcr"},
+	    {"id": "file_type", "value": "experiment"}
+	],
+	"experiment_data_type": [
+	    {"id": "file_type", "value": "experiment"}
+	],
+	"microscope": [
+	    {"id": "experiment_data_type", "value": "original"},
+	    {"id": "experiment_type", "value": "imaging"},
+	    {"id": "file_type", "value": "experiment"}
+	],
+	"software": [
+	    {"id": "experiment_data_type", "value": "processed"},
+	    {"id": "experiment_type", "value": "imaging"},
+	    {"id": "file_type", "value": "experiment"}
+	]
+    }
+}
