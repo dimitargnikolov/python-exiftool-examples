@@ -17,4 +17,5 @@ The testing code in `exiftool_backend_test.py` and `backend_test.py` is not very
 ## References
 
 [ExifTool Command-Line Examples](http://owl.phy.queensu.ca/~phil/exiftool/examples.html)
+
 [ExifTool FAQ](https://sno.phy.queensu.ca/~phil/exiftool/faq.html): In particular, question 11 on user-defined tags.
