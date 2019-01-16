@@ -15,8 +15,8 @@ class BackendTest(ABC):
     TEST_DATA_DIR = 'test-data'
 
     def __init__(self, metadata_fields, backend):
-        self.f1 = os.path.join(self.TEST_DATA_DIR, 'f1.tif')
-        self.f2 = os.path.join(self.TEST_DATA_DIR, 'f2.tif')
+        self.f1 = '{}/f1.tif'.format(self.TEST_DATA_DIR)
+        self.f2 = '{}/f2.tif'.format(self.TEST_DATA_DIR)
         self._metadata_fields_map = {
             field['id']: field for field in metadata_fields
         }
@@ -45,7 +45,7 @@ class BackendTest(ABC):
             elif val_type == 'date':
                 # datetimes should only be precise to seconds since
                 # some backends might not support higher precision
-                metadata[field] = str(datetime.now().replace(microsecond=0))
+                metadata[field] = datetime.now().replace(microsecond=0).strftime('%Y-%m-%d-%H%M%S')
             else:
                 raise ValueError('Unexpected value in metadata fields structure: {}'.format(field))
 
