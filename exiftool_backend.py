@@ -41,7 +41,7 @@ class ExifToolBackend(object):
 
     def close(self):
         self.stop()
-        
+
     def __enter__(self):
         self.open()
 
@@ -53,13 +53,13 @@ class ExifToolBackend(object):
         cmd = (self.exec_cmd,) + config_args + args
         logging.debug('exiftool command:\n{}\n'.format(' '.join(cmd)))
         return cmd
-        
+
     def execute_standalone(self, *args):
         return subprocess.run(self._make_cmd(*args), stdout=self.stdout, stderr=self.stderr)
 
     def execute(self, *args):
         return self.execute_standalone(*args)
-        
+
     def cmdfy_tag(self, tag):
         if self.tag_prefix is not None:
             return '-{}{}'.format(self.tag_prefix, tag) \
@@ -71,8 +71,9 @@ class ExifToolBackend(object):
     def get_tags(self, *files):
         try:
             metadata = json.loads(self.execute('-json', self.cmdfy_tag('*'), *files).stdout)
-        except JSONDecodeError:
-            return {f: None for f in files}
+        except JSONDecodeError as e:
+            logging.debug('JSONDecodeError: {}'.format(str(e)))
+            return {f: {} for f in files}
 
         filtered = {}
         for tags in metadata:
@@ -81,7 +82,11 @@ class ExifToolBackend(object):
                 for k, v in tags.items():
                     if k != 'SourceFile':
                         filtered[tags['SourceFile']][k.lower()] = v
-        return {f: (filtered[f] if f in filtered and len(filtered[f]) > 0 else None) for f in files}
+
+        for f in files:
+            if f not in filtered:
+                filtered[f] = {}
+        return filtered
 
     def set_tags(self, *args, **metadata):
         exec_args = args + tuple([

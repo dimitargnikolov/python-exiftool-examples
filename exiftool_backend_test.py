@@ -25,7 +25,7 @@ class TestExifToolBackend(unittest.TestCase, BackendTest):
 
         with open(self.METADATA_SCHEMA_FILE, 'r') as f:
             metadata_fields = json.loads(f.read())['fields']
-            
+
         BackendTest.__init__(
             self,
             metadata_fields,
@@ -38,18 +38,17 @@ class TestExifToolBackend(unittest.TestCase, BackendTest):
         )
 
     def _create_copy(self, filepath):
-        dirpath, basename = os.path.split(filepath)
-        newpath = os.path.join(dirpath, '{}.{}'.format(basename, time.time()))
+        newpath = '{}.{}'.format(filepath, time.time())
         shutil.copy(filepath, newpath)
         return newpath
-    
+
     def setUp(self):
         logging.debug('Copying f1.')
         self.f1 = self._create_copy(self.f1)
 
         logging.debug('Copying f2.')
         self.f2 = self._create_copy(self.f2)
-        
+
     def tearDown(self):
         logging.debug('Deleting {} and {}'.format(self.f1, self.f2))
 
@@ -58,7 +57,7 @@ class TestExifToolBackend(unittest.TestCase, BackendTest):
 
         if os.path.exists(self.f2):
             os.remove(self.f2)
-        
+
         logging.debug('Tear down complete.')
 
 if __name__ == '__main__':

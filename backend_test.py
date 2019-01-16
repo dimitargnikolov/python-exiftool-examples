@@ -29,14 +29,14 @@ class BackendTest(ABC):
     @abstractmethod
     def tearDown(self):
         self.backend.close()
-    
+
     def random_metadata(self):
         metadata = {}
 
         for field in self._metadata_fields_map:
             assert field not in metadata
             val_type = self._metadata_fields_map[field]['type']
-            
+
             if val_type == 'enum':
                 options = self._metadata_fields_map[field]['options']
                 metadata[field] = random.choice(options)['id']
@@ -59,13 +59,11 @@ class BackendTest(ABC):
         all_tags = self.backend.get_tags(self.f1, self.f2)
         self.assertEqual(len(all_tags), 2)
         for uri, tags in all_tags.items():
-            self.assertIsNone(tags)
+            self.assertEqual(tags, {})
 
     def test_random_read_write(self):
         metadata = self.random_metadata()
-        logging.debug('metadata: {}'.format(metadata))
         r = self.backend.set_tags(self.f1, self.f2, **metadata)
-        logging.debug('r: {}'.format(r))
 
         read_metadata = self.backend.get_tags(self.f1, self.f2)
         logging.debug('read_metadata: {}'.format(read_metadata))
@@ -87,9 +85,9 @@ class BackendTest(ABC):
 
         self.backend.set_tags(src_uri, **metadata)
         read_metadata = self.backend.get_tags(src_uri, dest_uri)
-        
+
         self.assertEqual(read_metadata[src_uri], metadata)
-        self.assertIsNone(read_metadata[dest_uri])
+        self.assertEqual(read_metadata[dest_uri], {})
 
         self.backend.copy(src_uri, dest_uri)
         read_metadata = self.backend.get_tags(src_uri, dest_uri)
@@ -113,70 +111,69 @@ class BackendTest(ABC):
         self.assertEqual(read_metadata[src_uri], src_md)
         self.assertEqual(read_metadata[dest_uri], src_md)
 
-    def test_remove_single(self):        
+    def test_remove_single(self):
         self.backend.set_tags(self.f1, self.f2, **self.random_metadata())
         read_metadata = self.backend.get_tags(self.f1, self.f2)
 
-        self.assertIsNotNone(read_metadata[self.f1])
-        self.assertIsNotNone(read_metadata[self.f2])
-        
+        self.assertNotEqual(read_metadata[self.f1], {})
+        self.assertNotEqual(read_metadata[self.f2], {})
+
         self.backend.remove(self.f1)
         read_metadata = self.backend.get_tags(self.f1, self.f2)
-        
-        self.assertIsNone(read_metadata[self.f1])
-        self.assertIsNotNone(read_metadata[self.f2])
+        self.assertEqual(read_metadata[self.f1], {})
+        self.assertNotEqual(read_metadata[self.f2], {})
 
         self.backend.remove(self.f2)
         read_metadata = self.backend.get_tags(self.f1, self.f2)
-
-        self.assertIsNone(read_metadata[self.f1])
-        self.assertIsNone(read_metadata[self.f2])
+        logging.debug('read_metadata: {}'.format(read_metadata))
+        self.assertEqual(read_metadata[self.f1], {})
+        self.assertEqual(read_metadata[self.f2], {})
 
     def test_remove_multiple(self):
         self.backend.set_tags(self.f1, self.f2, **self.random_metadata())
         read_metadata = self.backend.get_tags(self.f1, self.f2)
 
-        self.assertIsNotNone(read_metadata[self.f1])
-        self.assertIsNotNone(read_metadata[self.f2])
-        
+        self.assertNotEqual(read_metadata[self.f1], {})
+        self.assertNotEqual(read_metadata[self.f2], {})
+
         self.backend.remove(self.f1, self.f2)
         read_metadata = self.backend.get_tags(self.f1, self.f2)
 
-        self.assertIsNone(read_metadata[self.f1])
-        self.assertIsNone(read_metadata[self.f2])
-        
+        self.assertEqual(read_metadata[self.f1], {})
+        self.assertEqual(read_metadata[self.f2], {})
+
     def test_move(self):
         md = self.random_metadata()
-        
+
         self.backend.set_tags(self.f1, **md)
         read_metadata = self.backend.get_tags(self.f1, self.f2)
 
         self.assertEqual(read_metadata[self.f1], md)
-        self.assertIsNone(read_metadata[self.f2])
-        
+        self.assertEqual(read_metadata[self.f2], {})
+
         self.backend.move(self.f1, self.f2)
         read_metadata = self.backend.get_tags(self.f1, self.f2)
 
-        self.assertIsNone(read_metadata[self.f1])
+        self.assertEqual(read_metadata[self.f1], {})
         self.assertEqual(read_metadata[self.f2], md)
 
     def test_move_overwrite(self):
         md1 = self.random_metadata()
         md2 = self.random_metadata()
-        
+
         self.backend.set_tags(self.f1, **md1)
         self.backend.set_tags(self.f2, **md2)
         read_metadata = self.backend.get_tags(self.f1, self.f2)
 
         self.assertEqual(read_metadata[self.f1], md1)
         self.assertEqual(read_metadata[self.f2], md2)
-        
+
         self.backend.move(self.f2, self.f1)
         read_metadata = self.backend.get_tags(self.f1, self.f2)
 
         self.assertEqual(read_metadata[self.f1], md2)
-        self.assertIsNone(read_metadata[self.f2])
-        
+        self.assertEqual(read_metadata[self.f2], {})
+
 
 if __name__ == '__main__':
     print('This module is not meant to be excuted by itself.')
